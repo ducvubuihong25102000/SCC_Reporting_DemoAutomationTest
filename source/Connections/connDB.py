@@ -1,6 +1,6 @@
 import pyodbc
 import pandas as pd
-from Credentials import excel_credentials
+from source.Connections.Credentials import excel_credentials
 
 CONN_DRIVER = "SQL Server"
 
@@ -17,4 +17,4 @@ def cursor(connString):
     cursor = conn.cursor()
     return cursor, conn
 
-returnCursor = cursor(connString)
+returnConn = cursor(connString)

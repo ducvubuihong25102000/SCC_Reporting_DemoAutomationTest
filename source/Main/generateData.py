@@ -2,10 +2,12 @@ from faker import Faker
 import faker_commerce
 import random
 import datetime
-import connection #file
+import source.Connections.connDB as conn #file
  
  
-cursor = connection.returnCursor
+cursor = conn.returnConn[0]
+connection = conn.returnConn[1]
+
 fakeObject = Faker()
 fakeObject.add_provider(faker_commerce.Provider)
 
@@ -25,8 +27,8 @@ for i in range(0,10):
     b = fakeObject.phone_number()
     execution = insert_cust.format(a = a, b = b)
     print(execution)
-    cursor[0].execute(execution)
-    cursor[1].commit()
+    cursor.execute(execution)
+    connection.commit()
 
 
 # [PRODUCT]
@@ -35,19 +37,19 @@ for i in range(0,10):
     b = random.random()*1000
     execution = insert_pro.format(a = a, b = b)
     print(execution)
-    cursor[0].execute(execution)
-    cursor[1].commit()
+    cursor.execute(execution)
+    connection.commit()
 
 
 # INSERT ORDER TABLE
 for j in range (0,30):
     for i in range(0, 30):
-        a = random.choice([i[0] for i in cursor[0].execute(query_pro).fetchall()])
-        b = random.choice([i[0] for i in cursor[0].execute(query_cust).fetchall()])
+        a = random.choice([i[0] for i in cursor.execute(query_pro).fetchall()])
+        b = random.choice([i[0] for i in cursor.execute(query_cust).fetchall()])
         c = str(datetime.date.today() - datetime.timedelta(days=j)).replace("-","")
         d = random.randrange(1, 10) 
         execution = insert_order.format(a = a, b = b, c=c, d=d)
         print(execution)
-        cursor[0].execute(execution)
-        cursor[1].commit()
+        cursor.execute(execution)
+        connection.commit()
         pass

@@ -41,39 +41,4 @@ list_product_id = [i[0] for i in cursor.execute(query_pro).fetchall()]
 list_customer_id = [i[0] for i in cursor.execute(query_cust).fetchall()]
 print(list_customer_id)
 
-# INSERT ORDER TABLE
-# for j in range (0,30):
-#     for i in range(0, 30):
-#         a = random.choice(list_product_id)
-#         b = random.choice(list_customer_id)
-#         c = str(datetime.date.today() - datetime.timedelta(days=j)).replace("-","")
-#         d = random.randrange(1, 10) 
-#         execution = insert_order.format(a = a, b = b, c=c, d=d)
-#         print(execution)
-#         cursor.execute(execution)
-#         conn.commit()
-#         pass
-    
-#CUSTOMER
-# for i in range(0,10):
-#     a = fakeObject.name()
-#     b = fakeObject.phone_number()
-#     execution = insert.format(a = a, b = b)
-#     print(execution)
-#     cursor.execute(execution)
-#     conn.commit()
-
-
-# [PRODUCT]
-# for i in range(0,10):
-#     a = fakeObject.ecommerce_name()
-#     b = random.random()*1000
-#     execution = insert2.format(a = a, b = b)
-#     print(execution)
-#     cursor.execute(execution)
-#     conn.commit()
-
-# result = cursor.execute(query2).fetchall()
-# for row in result:
-#     print(row)
     
