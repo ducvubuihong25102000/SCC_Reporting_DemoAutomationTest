@@ -1,18 +1,13 @@
 import pyodbc
 import pandas as pd
-
+from Credentials import excel_credentials
 
 CONN_DRIVER = "SQL Server"
-EXCEL_PATH = r'D:\\DemoPowerBI\\demo_powerbi\\source\\PythonDataQualityChecker.xlsx'
 
-
-
-excelLoad = pd.read_excel(EXCEL_PATH,sheet_name=0)
-
-sqlserver = excelLoad['SQL_Server'][0]
-sqluser = excelLoad['SQL_User'][0] #RUN IN SQL SERVER 'SELECT SUPER_NAME()'
-sqlpassword = ['SQL_Password'][0]
-sqldb = excelLoad['SQL_Database'][0]
+sqlserver = excel_credentials['SQL_Server'][0]
+sqluser = excel_credentials['SQL_User'][0] #RUN IN SQL SERVER 'SELECT SUPER_NAME()'
+sqlpassword = excel_credentials['SQL_Password'][0]
+sqldb = excel_credentials['SQL_Database'][0]
 
 baseConnString = "Driver={{{Driver}}};Server={Server};Database={Database};Trusted_Connection=yes;"
 connString = baseConnString.format(Driver = CONN_DRIVER, Server = sqlserver, Database = sqldb)
