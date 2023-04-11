@@ -1,7 +1,12 @@
+from time import time
+start = time()
+
+import openpyxl
 import requests
 import json
 import pandas as pd
 from source.Connections.connPBIService import headers
+from source.Connections.Credentials import excel_quality, EXCEL_PATH
 
 # # Get Rest API list of workspace
 # request_list_workspace = 'https://api.powerbi.com/v1.0/myorg/groups'
@@ -13,7 +18,7 @@ from source.Connections.connPBIService import headers
 
 # # Check permission
 # if response_list_workspace.status_code == 200:
-#     result = response_list_workspace.json()
+#     result = response_list_workspace.json()5
 #     for item in result['value']:
 #         # print(item)
 #         # Get list of dataset in each workspace
@@ -37,41 +42,67 @@ from source.Connections.connPBIService import headers
         
         
 
-# DAX query request
+# # DAX query (SELECT * FROM Customer)
+# DAX_query = {
+#     'queries' : [
+#         {
+#             'query': r'EVALUATE VALUES(Customer)'
+#         }
+#     ],
+#     "serializerSettings": {
+#     "includeNulls": True
+#     } 
+# }
+# datasetId = '753c0d56-2e7e-42f0-a29c-3648a45c022d' # Get from above API
+# request_datasets_query = f'https://api.powerbi.com/v1.0/myorg/datasets/{datasetId}/executeQueries'
+
+# response_datasets_query = requests.post(request_datasets_query, headers= headers, json= DAX_query)
+# print('Request Power BI Status Code: ' + str(response_datasets_query.status_code))
+
+# result_json = response_datasets_query.json()
+# # clean_response_datasets_query = json.dumps(result_json, indent= 2)
+# # print(clean_response_datasets_query)
+
+# df_pbi = pd.DataFrame.from_dict(result_json['results'][0]['tables'][0]['rows'])
+# print(df_pbi)
+# print('Time after call API: ' + str(time() - start))
+
+# myworkbook = openpyxl.load_workbook(r'D:\DemoPowerBI\demo_powerbi\source\PythonDataQualityChecker.xlsx')
+# worksheet = myworkbook['Quality Check']
+# cell = worksheet.cell(row= 3, column= 3, value= str(df_pbi.values))
+# myworkbook.save(r'D:\DemoPowerBI\demo_powerbi\source\PythonDataQualityChecker.xlsx')
+
+
+#DAX Query (SELECT Id_Cust, SUM(Quantity) FROM Order ORDER BY Quantity, Id_Cust)
 DAX_query = {
     'queries' : [
         {
-            'query': r'EVALUATE VALUES(Customer)'
+            'query' : ''
         }
     ],
     "serializerSettings": {
     "includeNulls": True
     } 
 }
+DAX_query['queries'][0]['query'] = excel_quality['PBI_DAX_Query'][0]
+
 datasetId = '753c0d56-2e7e-42f0-a29c-3648a45c022d' # Get from above API
 request_datasets_query = f'https://api.powerbi.com/v1.0/myorg/datasets/{datasetId}/executeQueries'
-print(request_datasets_query)
 
 response_datasets_query = requests.post(request_datasets_query, headers= headers, json= DAX_query)
-print(response_datasets_query.status_code)
+print('Request Power BI Status Code: ' + str(response_datasets_query.status_code))
 
 result_json = response_datasets_query.json()
-clean_response_datasets_query = json.dumps(result_json, indent= 2)
-print(clean_response_datasets_query)
-print(type(clean_response_datasets_query))
+# clean_response_datasets_query = json.dumps(result_json, indent= 2)
+# print(clean_response_datasets_query)
 
-print(result_json['results'][0]['tables'][0]['rows'])
-df_pbi = pd.DataFrame.from_dict(result_json['results'][0]['tables'][0]['rows'])
+df_pbi = pd.DataFrame.from_dict(result_json['results'][0]['tables'][0]['rows']).sort_values(by=['[Quantity]', 'Order[Id_Cust]'])
+
+
+myworkbook = openpyxl.load_workbook(EXCEL_PATH)
+worksheet = myworkbook['Quality Check']
+cell = worksheet.cell(row= 2, column= 3, value= str(df_pbi.values))
+myworkbook.save(EXCEL_PATH)
+
 print(df_pbi)
-print(type(df_pbi))
-
-
-## Check permission to action in Dataset
-# groupId = '908218c2-5294-4680-8130-5286c77872ed'
-
-# # temp = f'https://api.powerbi.com/v1.0/myorg/datasets/{datasetId}/tables'
-# temp = f'https://api.powerbi.com/v1.0/myorg/groups/{groupId}/datasets/{datasetId}'
-# print(temp)
-# temprun = requests.get(temp, headers = headers)
-# print(temprun.status_code)
-# print(temprun.json().keys())
+print('Time after call API: ' + str(time() - start))
